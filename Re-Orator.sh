@@ -103,15 +103,15 @@ fi
 #
 if [[ $Hour == "" ]]
 	then
-		Hour='00'
+		Hour='01'
 fi
 if [[ $Minute == "" ]]
 	then
-		Minute='00'
+		Minute='01'
 fi
 if [[ $Second == "" ]]
 	then
-		Second='00'
+		Second='01'
 fi
 #
 FileStamp=$Year$Month$Day$Hour$Minute.$Second
