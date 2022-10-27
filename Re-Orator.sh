@@ -11,7 +11,7 @@
 #		
 #   - This script will ...
 #			Delete and then re-write a text file up to 3 Lines long, with optional spacing between lines
-#			and also write a very specific timestamp to the file for versioing purposes.
+#			and also write a very specific timestamp to the file for versioning purposes.
 #
 ###############################################################################################################################################
 #
@@ -28,8 +28,7 @@
 ###############################################################################################################################################
 #
 TextFilePath=$4 # Grab the path to the text file from JAMF variable #4 eg /Library/Security/PolicyBanner.txt
-#TimeStampVariable=$5 # Grab the required TimeStamp from JAMF variable #5 eg 2020-07-16_17:00:00
-#
+TimeStampVariable=$5 # Grab the required TimeStamp from JAMF variable #5 eg 2020-07-16_17:00:00
 Line1="${6}" # Grab the required First Line of text from JAMF variable #6 eg TEXT LINE 1
 BlankLine12="${7}" # Grab the required number of Blank Lines between Lines 1 and 2 of Text from JAMF variable #7 eg 3
 Line2="${8}" # Grab the required Second Line of text from JAMF variable #8 eg TEXT LINE 2
@@ -37,9 +36,10 @@ BlankLine23="${9}" # Grab the required number of Blank Lines between Lines 2 and
 Line3="${10}" # Grab the required Third Line of text from JAMF variable #10 eg TEXT LINE 3
 #
 ScriptName="append suffix as required - Delete and Re-Write TextFile with Stamp" # Set the name of the script for later logging
+ExitCode=0
 #
 ###############################################################################################################################################
-
+#
 # Checking and Setting Variables Complete
 #
 ###############################################################################################################################################
@@ -82,36 +82,36 @@ if [[ $Year != "" ]]
 					then
 						/bin/echo 'Date not set Correctly'
 						/bin/echo 'Please Set Date according to Variable Guidelines'
+						ExitCode=1
 						SectionEnd # Calling the Section End Function to make Screen Output / Reporting easier to read
 						ScriptEnd # Calling the Script End Function to make Screen Output / Reporting easier to read
-						exit 1
 				fi
 			else
 				/bin/echo 'Date not set Correctly'
 				/bin/echo 'Please Set Date according to Variable Guidelines'
+				ExitCode=1
 				SectionEnd # Calling the Section End Function to make Screen Output / Reporting easier to read
 				ScriptEnd # Calling the Script End Function to make Screen Output / Reporting easier to read
-				exit 1
 		fi
 	else
 		/bin/echo 'Date not set Correctly'
 		/bin/echo 'Please Set Date according to Variable Guidelines'
+		ExitCode=1
 		SectionEnd # Calling the Section End Function to make Screen Output / Reporting easier to read
 		ScriptEnd # Calling the Script End Function to make Screen Output / Reporting easier to read
-		exit 1
 fi
 #
 if [[ $Hour == "" ]]
 	then
-		Hour='01'
+		Hour='00'
 fi
 if [[ $Minute == "" ]]
 	then
-		Minute='01'
+		Minute='00'
 fi
 if [[ $Second == "" ]]
 	then
-		Second='01'
+		Second='00'
 fi
 #
 FileStamp=$Year$Month$Day$Hour$Minute.$Second
@@ -202,9 +202,7 @@ done
 SectionEnd(){
 #
 /bin/echo # Outputting a Blank Line for Reporting Purposes
-#
 /bin/echo  ----------------------------------------------- # Outputting a Dotted Line for Reporting Purposes
-#
 /bin/echo # Outputting a Blank Line for Reporting Purposes
 #
 }
@@ -216,12 +214,11 @@ SectionEnd(){
 ScriptEnd(){
 #
 /bin/echo Ending Script '"'$ScriptName'"'
-#
 /bin/echo # Outputting a Blank Line for Reporting Purposes
-#
 /bin/echo  ----------------------------------------------- # Outputting a Dotted Line for Reporting Purposes
-#
 /bin/echo # Outputting a Blank Line for Reporting Purposes
+#
+exit $ExitCode
 #
 }
 #
