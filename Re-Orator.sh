@@ -170,7 +170,7 @@ Line=$1
 LineNo=$2
 /bin/echo 'Writing Line' $LineNo
 /bin/echo '"'$Line'"'
-/bin/echo 'to File '"'$TextFilePath'"''
+/bin/echo 'to File "'${TextFilePath}'"'
 #
 /bin/echo $Line >> "${TextFilePath}"
 #
@@ -249,13 +249,18 @@ fi
 FileTimeStamp # Calling the FileTimeStamp Function to Check the Variable is Correctly Set and Pull out the Relevant Data
 SectionEnd # Calling the Section End Function to make Screen Output / Reporting easier to read
 #
-rm "$TextFilePath" # Deleting Existing File
-#
-EvaluateLines # Calling the EvaluateLines Function to evaluate Variables to determine Lines and Spaces that need writing'
-SectionEnd # Calling the Section End Function to make Screen Output / Reporting easier to read
-#
-/bin/echo 'Setting Timestamp of new file to' $FileStamp
-touch -t $FileStamp "${TextFilePath}"
+CurrentDate=$(date -r "$TextFilePath" +"%Y%m%d%H%M.%S")
+if [[ "$CurrentDate" != "$FileStamp" ]] # check if this is a user profile based file
+	then
+		rm "$TextFilePath" # Deleting Existing File
+		EvaluateLines # Calling the EvaluateLines Function to evaluate Variables to determine Lines and Spaces that need writing'
+		SectionEnd # Calling the Section End Function to make Screen Output / Reporting easier to read
+		#
+		/bin/echo 'Setting Timestamp of new file to' $FileStamp
+		touch -t $FileStamp "${TextFilePath}"
+	else
+		/bin/echo 'File Timestamp matches, nothing to do'    
+fi
 #
 SectionEnd # Calling the Section End Function to make Screen Output / Reporting easier to read
 ScriptEnd # Calling the Script End Function to make Screen Output / Reporting easier to read
