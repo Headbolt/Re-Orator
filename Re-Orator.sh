@@ -17,9 +17,12 @@
 #
 # HISTORY
 #
-#   Version: 1.0 - 16/07/2020
+#	Version: 1.1 - 07/08/2023
 #
-#   - 16/07/2020 - V1.0 - Created by Headbolt
+#	16/07/2020 - V1.0 - Created by Headbolt
+#
+#	07/08/2023 - V1.1 - Updated by Headbolt
+#							This is to allow for a user profile based file
 #
 ###############################################################################################################################################
 #
@@ -27,15 +30,16 @@
 #
 ###############################################################################################################################################
 #
-TextFilePath=$4 # Grab the path to the text file from JAMF variable #4 eg /Library/Security/PolicyBanner.txt
-TimeStampVariable=$5 # Grab the required TimeStamp from JAMF variable #5 eg 2020-07-16_17:00:00
-Line1="${6}" # Grab the required First Line of text from JAMF variable #6 eg TEXT LINE 1
-BlankLine12="${7}" # Grab the required number of Blank Lines between Lines 1 and 2 of Text from JAMF variable #7 eg 3
-Line2="${8}" # Grab the required Second Line of text from JAMF variable #8 eg TEXT LINE 2
-BlankLine23="${9}" # Grab the required number of Blank Lines between Lines 2 and 3 of Text from JAMF variable #9 eg 2
-Line3="${10}" # Grab the required Third Line of text from JAMF variable #10 eg TEXT LINE 3
+TextFilePathUserYesNo="${4}" # Grab the path to the text file from JAMF variable #4 eg /Library/Security/PolicyBanner.txt
+UserProfileTextFile="${5}" # Grab if the path is inside the users Profile from JAMF variable #4 eg YES
+TimeStampVariable=$6 # Grab the required TimeStamp from JAMF variable #6 eg 2020-07-16_17:00:00
+Line1="${7}" # Grab the required First Line of text from JAMF variable #7 eg TEXT LINE 1
+BlankLine12="${8}" # Grab the required number of Blank Lines between Lines 1 and 2 of Text from JAMF variable #8 eg 3
+Line2="${9}" # Grab the required Second Line of text from JAMF variable #9 eg TEXT LINE 2
+BlankLine23="${10}" # Grab the required number of Blank Lines between Lines 2 and 3 of Text from JAMF variable #10 eg 2
+Line3="${11}" # Grab the required Third Line of text from JAMF variable #11 eg TEXT LINE 3
 #
-ScriptName="append suffix as required - Delete and Re-Write TextFile with Stamp" # Set the name of the script for later logging
+ScriptName="Global | Delete and Re-Write TextFile with Stamp" # Set the name of the script for later logging
 ExitCode=0
 #
 ###############################################################################################################################################
@@ -82,21 +86,21 @@ if [[ $Year != "" ]]
 					then
 						/bin/echo 'Date not set Correctly'
 						/bin/echo 'Please Set Date according to Variable Guidelines'
-						ExitCode=1
+                        ExitCode=1
 						SectionEnd # Calling the Section End Function to make Screen Output / Reporting easier to read
 						ScriptEnd # Calling the Script End Function to make Screen Output / Reporting easier to read
 				fi
 			else
 				/bin/echo 'Date not set Correctly'
 				/bin/echo 'Please Set Date according to Variable Guidelines'
-				ExitCode=1
+                ExitCode=1
 				SectionEnd # Calling the Section End Function to make Screen Output / Reporting easier to read
 				ScriptEnd # Calling the Script End Function to make Screen Output / Reporting easier to read
 		fi
 	else
 		/bin/echo 'Date not set Correctly'
 		/bin/echo 'Please Set Date according to Variable Guidelines'
-		ExitCode=1
+        ExitCode=1
 		SectionEnd # Calling the Section End Function to make Screen Output / Reporting easier to read
 		ScriptEnd # Calling the Script End Function to make Screen Output / Reporting easier to read
 fi
@@ -168,7 +172,7 @@ LineNo=$2
 /bin/echo '"'$Line'"'
 /bin/echo 'to File '"'$TextFilePath'"''
 #
-/bin/echo $Line >> $TextFilePath
+/bin/echo $Line >> "${TextFilePath}"
 #
 }
 #
@@ -235,16 +239,23 @@ exit $ExitCode
 /bin/echo # Outputting a Blank Line for Reporting Purposes
 SectionEnd # Calling the Section End Function to make Screen Output / Reporting easier to read
 #
+if [[ $UserProfileTextFile == "YES" ]] # check if this is a user profile based file
+	then
+		TextFilePath=$(/bin/echo "/Users/$3"$TextFilePathUserYesNo)
+	else
+		TextFilePath=$TextFilePathUserYesNo
+fi
+#
 FileTimeStamp # Calling the FileTimeStamp Function to Check the Variable is Correctly Set and Pull out the Relevant Data
 SectionEnd # Calling the Section End Function to make Screen Output / Reporting easier to read
 #
-rm $TextFilePath # Deleting Existing File
+rm "$TextFilePath" # Deleting Existing File
 #
 EvaluateLines # Calling the EvaluateLines Function to evaluate Variables to determine Lines and Spaces that need writing'
 SectionEnd # Calling the Section End Function to make Screen Output / Reporting easier to read
 #
 /bin/echo 'Setting Timestamp of new file to' $FileStamp
-touch -t $FileStamp $TextFilePath
+touch -t $FileStamp "${TextFilePath}"
 #
 SectionEnd # Calling the Section End Function to make Screen Output / Reporting easier to read
 ScriptEnd # Calling the Script End Function to make Screen Output / Reporting easier to read
